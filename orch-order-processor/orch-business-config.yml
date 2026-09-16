@@ -16,16 +16,16 @@ query:
 
 token:
   IsTOkenRequired: false
-  CLM_SSO_ENDPOINT: https://192.168.20.40:9443/oauth2/token
+  CLM_SSO_ENDPOINT: https://191.187.22.40:9443/authentication/token
   CLM_SSO_CLIENTID: U_gXZf9i3tAPWGFkTnXmX8xxXZMa
   CLM_SSO_CLIENTSECRET: pxRZLyyYfRdJq8fDhOonC7iCIOIa
   CLM_SSO_USERNAME: kumarka
-  CLM_SSO_PASSWORD: KKK@iran14
+  CLM_SSO_PASSWORD: Kkumar
   GRANT_TYPE: password
   SCOPE: openid
 
 endpoint:
   URL:
-    default: http://192.168.20.135:8083/1/CLM/1/ActivationCallBackRequest
-    MCGA: https://bss-uat.emtel.com/clm-reg/rest/dataservice/1/CLM/1/ActivationCallBackRequest
-    INS: http://192.168.20.135:8083/1/CLM/1/ActivationCallBackRequest
+    default: http://191.187.22.40:9443/1/CLM/1/ActivationCallBackRequest
+    MCGA: https://191.187.22.40:9443/clm-reg/rest/dataservice/1/CLM/1/ActivationCallBackRequest
+    INS: http://191.187.22.40:9443/1/CLM/1/ActivationCallBackRequest

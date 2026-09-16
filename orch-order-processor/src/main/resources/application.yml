@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: orch-order-processor
+  config:
+    import: optional:file:./orch-business-config.yml  
+  datasource:
+    url: ${ORCH_DB_URL}
+#    url: jdbc:oracle:thin:@10.16.3.43:1521:cbs
+    username: ${ORCH_DB_USERNAME}
+#    username: CBS_APPS
+    password: ${ORCH_DB_PASSWORD}
+#    password: CBS_APPS
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true 
+    properties:
+      hibernate:
+        jdbc.batch_size: 100
+        order_inserts: true
+        order_updates: true 	
+ 

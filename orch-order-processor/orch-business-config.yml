@@ -1,0 +1,31 @@
+scheduler:
+  rate: 10000
+
+actions:
+  limitValue: 100
+  actionCodes:
+    REGE: 50
+    SPCK: 10
+    ACUG: 10
+    SUSP: 10
+    PACK: 10
+    INST: 10
+
+query:
+  listOfQRecordsCount_ORCH: SELECT a.ACTION_CODE_V AS actionCode, COUNT(*) AS recordCount FROM CB_ORCH_REQUEST_DTLS a WHERE a.STATUS_CODE_V = 'Q' AND a.OPERATION_NAME_V = 'CLMD' GROUP BY a.ACTION_CODE_V
+
+token:
+  IsTOkenRequired: false
+  CLM_SSO_ENDPOINT: https://192.168.20.40:9443/oauth2/token
+  CLM_SSO_CLIENTID: U_gXZf9i3tAPWGFkTnXmX8xxXZMa
+  CLM_SSO_CLIENTSECRET: pxRZLyyYfRdJq8fDhOonC7iCIOIa
+  CLM_SSO_USERNAME: kumarka
+  CLM_SSO_PASSWORD: KKK@iran14
+  GRANT_TYPE: password
+  SCOPE: openid
+
+endpoint:
+  URL:
+    default: http://192.168.20.135:8083/1/CLM/1/ActivationCallBackRequest
+    MCGA: https://bss-uat.emtel.com/clm-reg/rest/dataservice/1/CLM/1/ActivationCallBackRequest
+    INS: http://192.168.20.135:8083/1/CLM/1/ActivationCallBackRequest

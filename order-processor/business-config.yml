@@ -1,0 +1,170 @@
+scheduler:
+  rate: 10000
+  shutdown-cron: "0 45 23 * * ?"       # Configures shutdown at 23:45 every day
+  # shutdown-cron: "0 0 1 1 2200 ?"
+  shutdown-timezone: "Asia/Kolkata"    # Timezone for the cron expression
+
+threadpool:
+  cbs:
+    coreSize: 2
+    maxSize: 10
+    queueCapacity: 100
+  prc:
+    coreSize: 2
+    maxSize: 10
+    queueCapacity: 100
+
+httpReadTimeout: 60
+
+actions:
+  limitValue: 6
+  actionCodes:
+    REGE: 1
+    SPCK: 1
+    ACUG: 1
+    SUSP: 1
+    PACK: 1
+    INST: 1
+
+query:
+  # Ensure:
+  # 1. It contains a 'FROM <table>' clause.
+  # 2. It contains a 'GROUP BY <action_code_column>' clause.
+  # 3. It contains a 'WHERE <status_column> = 'Q'' or similar comparison for the status.
+  # 4. The action code column and COUNT(*) must have explicit aliases (e.g., 'SELECT col AS alias, COUNT(*) AS countAlias').
+  countQuery: "SELECT a.ACTION_CODE_V AS actionCode, COUNT(*) AS recordCount FROM CB_SUBS_PROVISIONING a WHERE a.STATUS_V = 'Q' GROUP BY a.ACTION_CODE_V"
+  queryMetaData:
+    # tableName, actionCodeColumn, statusColumn, actionCodeAlias, recordCountAlias are now extracted from 'countQuery'.
+    actionDateColumn: ACTION_DATE_DT        # For ORDER BY <COLUMN_NAME> DESC
+    primaryKeyColumn: CHRONO_NUM_N          # Unique value column (order ID)
+    primaryKeyColumn2:
+    requestPayloadColumn: CAI_CMD_REQ_STRING    # EIA request column
+    columnNamesToFetch: "*"                 # Comma-separated list of all column names to fetch from the database. "*" for all Columns. If column names are specified, ensure all the mandatory column names are mentioned.
+
+stored-procedures:
+  callableStatementString: "{ call UPDT_CAI_RESP_PRC(?, ?, ?, ?) }"
+  # List of arguments for the stored procedure.
+  # Format: "IN, <COLUMN_NAME>" for input arguments where <COLUMN_NAME> is a column from the fetched record.
+  #         "IN, EIARes" as input argument when EIA response to be passed.
+  #         "OUT" for output arguments (defaults to INTEGER type).
+  args:
+    - "IN, PROCESS_NO_N"   # Example: Assuming PROCESS_NO_COL is passed as the first IN arg
+    - "IN, EIARes"         # Example: EIA response body (EIARes)
+    - "OUT"                # Example: First OUT arg
+    - "OUT"                # Example: Second OUT arg
+
+endpoints:
+  httpMethod: POST
+  contentTypeHeader: text/xml
+  SOAPAction: http://www.openuri.org/clientRequest
+  url:
+    eiaProxy: http://localhost:8290/services/EIAproxy
+    REGE: http://localhost:8290/services/EIAproxy
+    SPCK: http://localhost:8290/services/EIAproxy
+    ACUG: http://localhost:8290/services/EIAproxy
+    SUSP: http://localhost:8290/services/EIAproxy
+    PACK: http://localhost:8290/services/EIAproxy
+    INST: http://localhost:8290/services/EIAproxy
+
+authentication:
+  isRequired: true                                      # true if Authorization headers need to be passed, else false
+  dynamic:
+    flag: false                                         # (boolean data type) enable when dynamic authentication is enabled in EIA Proxy
+    dynamicSecretKey: WSO@MITTEIATO#PPAUTH              # dynamic secret key, value to be replicated from secret key being used in EIA Proxy
+  staticSecretKey: WSO@MITECNOTREEEIATO#PPAUTHCHBSS     # static secret key, value to be replicated from secret key being used in EIA Proxy
+  username: mw_clm                                      # username passed in Authorization
+  password: TVdfY2xtMTA=  # (MW_clm10)                  # Base54 encodec password used for Authorization
+
+token:
+  IsTOkenRequired: false
+  CLM_SSO_ENDPOINT: https://192.168.20.40:9443/oauth2/token
+  CLM_SSO_CLIENTID: U_gXZf9i3tAPWGFkTnXmX8xxXZMa
+  CLM_SSO_CLIENTSECRET: pxRZLyyYfRdJq8fDhOonC7iCIOIa
+  CLM_SSO_USERNAME: kumarka
+  CLM_SSO_PASSWORD: KKK@iran14
+  GRANT_TYPE: password
+  SCOPE: openid
+
+custom-headers:
+  X-orderProcessor: "true"
+
+######################################################################################################################
+
+#scheduler:
+#  rate: 10000
+#  shutdown-cron: "0 45 23 * * ?"       # Configures shutdown at 23:45 every day
+#  # shutdown-cron: "0 0 1 1 2200 ?"
+#  shutdown-timezone: "Asia/Kolkata"    # Timezone for the cron expression
+#
+#threadpool:
+#  cbs:
+#    coreSize: 2
+#    maxSize: 10
+#    queueCapacity: 100
+#  prc:
+#    coreSize: 2
+#    maxSize: 10
+#    queueCapacity: 100
+#
+#httpReadTimeout: 60
+#
+#actions:
+#  limitValue: 25
+#  actionCodes:
+#    ITEMSALES: 10
+#    ITEMRETURN: 10
+#    ITEMCANCEL: 10
+#    MRACLM: 10
+#
+#query:
+#  # Ensure:
+#  # 1. It contains a 'FROM <table>' clause.
+#  # 2. It contains a 'GROUP BY <action_code_column>' clause.
+#  # 3. It contains a 'WHERE <status_column> = 'Q'' or similar comparison for the status.
+#  # 4. The action code column and COUNT(*) must have explicit aliases (e.g., 'SELECT col AS alias, COUNT(*) AS countAlias').
+#  countQuery: "SELECT a.ACTION_CODE_V AS actionCode, COUNT(*) AS recordCount FROM EMT_MRA_REQUESTS a WHERE a.STATUS_CODE_V = 'Q' GROUP BY a.ACTION_CODE_V"
+#  queryMetaData:
+#    # Essential metadata for Fetch Query.
+#    # tableName, actionCodeColumn, statusColumn, actionCodeAlias, recordCountAlias are now extracted from 'countQuery'.
+#    actionDateColumn: REQUEST_TIME_DT       # For ORDER BY <COLUMN_NAME> DESC
+#    primaryKeyColumn: SCHDL_LINK_CODE_N     # Unique value column (order ID)
+#    primaryKeyColumn2:
+#    requestXmlColumn: REQUEST_OBJECT        # EIA request column
+#    columnNamesToFetch: "*"                 # Comma-separated list of all column names to fetch from the database.
+#                                            # "*" for all Columns. If column names are specified,
+#                                            # ensure all the mandatory column names are mentioned.
+#
+#stored-procedures:
+#  callableStatementString: "{ call UPDT_EMT_MRA_RESP(?,?,?,?,?,?,?,?) }"
+#  # List of arguments for the stored procedure.
+#  # Format: "IN, <COLUMN_NAME>" for input arguments where <COLUMN_NAME> is a column from the fetched record.
+#  #         "IN, EIARes" as input argument when EIA response to be passed.
+#  #         "OUT" for output arguments (defaults to INTEGER type).
+#  args:
+#    - "IN, ORDER_REF_NO_V"   # Example: Assuming PROCESS_NO_COL is passed as the first IN arg
+#    - "IN, SCHDL_LINK_CODE_N"         # Example: EIA response body (EIARes)
+#    - "IN, SEQ_NUM_N"                # Example: First OUT arg
+#    - "IN, ACTION_CODE_V"
+#    - "IN, EIARes"
+#    - "OUT"
+#    - "IN, REQUEST_TYPE_V"
+#    - "OUT"
+#
+#endpoints:
+#  httpMethod: POST
+#  contentTypeHeader: text/xml
+#  SOAPAction: http://www.openuri.org/clientRequest
+#  url:
+#    eiaProxy: https://bss-emtel-odc-eia.tecnotree.com/services/EIAproxy
+#    ITEMSALES: https://bss-emtel-odc-eia.tecnotree.com/services/EIAproxy
+#    ITEMRETURN: https://bss-emtel-odc-eia.tecnotree.com/services/EIAproxy
+#    ITEMCANCEL: https://bss-emtel-odc-eia.tecnotree.com/services/EIAproxy
+#
+#authentication:
+#  isRequired: true                                                         # true if Authorization headers need to be passed, else false
+#  dynamic:
+#    flag: false                                                            # (boolean data type) enable when dynamic authentication is enabled in EIA Proxy
+#    dynamicSecretKey: WSO@MITECNOTREEFILET                                 # dynamic secret key, value to be replicated from secret key being used in EIA Proxy
+#  staticSecretKey: WSO@MITECNOTREEEIATO#PPAUTHCHBSS                        # static secret key, value to be replicated from secret key being used in EIA Proxy
+#  username: ordermgtodc                                                    # username passed in Authorization
+#  password: b3JkZXJtZ3RvZGNQQHNzdzByZDE=   # (ordermgtodcP@ssw0rd1)        # Bse64 encoded password for in Authorization

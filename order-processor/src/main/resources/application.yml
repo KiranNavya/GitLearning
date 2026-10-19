@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT}
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+spring:
+  application:
+    name: order-processor
+  config:
+    import: optional:file:./business-config.yml
+  datasource:
+    hikari:
+      maximum-pool-size: 30
+      connection-timeout: 60000
+    url: ${DB_URL}
+#    url: jdbc:oracle:thin:@172.26.64.235:1521/EMTELUAT
+#    url: jdbc:oracle:thin:@10.16.3.43:1521:cbs
+    username: ${DB_USERNAME}
+#    username: CRM_APPS_UAT
+#    username: CBS_APPS
+    password: ${DB_PASSWORD}
+#    password: CRM_Ap65_u#T35
+#    password: CBS_APPS
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc.batch_size: 100
+        order_inserts: true
+        order_updates: true
